@@ -52,7 +52,7 @@ grails.project.dependency.resolution = {
 		compile 'org.vaadin.addon:confirmdialog:2.1.2'
 //		compile 'org.vaadin.addons:tokenfield:7.0.1'
 //		compile 'org.vaadin.addons:ckeditor-wrapper-for-vaadin:7.9.0'
-		compile 'org.vaadin.ui:numberfield:0.1.3'
+		//compile 'org.vaadin.ui:numberfield:0.1.3'
 //		compile 'org.vaadin.addons:numberfield7:0.0.1'
 //		compile 'org.vaadin.addons:resetbuttonfortextfield:1.1.1'
 		compile 'org.vaadin.addons:actionbuttontextfield:1.0.2'
@@ -72,6 +72,9 @@ grails.project.dependency.resolution = {
         compile ":asset-pipeline:1.9.9"
 		compile ":vaadin:7.3.6"
 //		compile ':jasper:latest'
+		//compile ':spring-security-core:2.0-RC4'
+		//compile "com.github.vaadin-for-grails:vaadin-spring-security:1.0-SNAPSHOT"
+		compile ":shiro:1.2.1"
 		
         // plugins needed at runtime but not for compilation
         runtime ":hibernate4:4.3.6.1" // or ":hibernate:3.6.10.18"

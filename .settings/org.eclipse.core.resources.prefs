@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//.link_to_grails_plugins/shiro-1.2.1/grails-app/i18n=UTF-8
+encoding//.link_to_grails_plugins/shiro-1.2.1/grails-app/i18n/messages.properties=UTF-8
 encoding//.link_to_grails_plugins/vaadin-7.3.6/grails-app/i18n=UTF-8
 encoding//.link_to_grails_plugins/vaadin-7.3.6/grails-app/i18n/messages.properties=UTF-8
 encoding//grails-app/i18n=UTF-8
@@ -19,3 +21,4 @@ encoding//grails-app/i18n/messages_ru.properties=UTF-8
 encoding//grails-app/i18n/messages_sv.properties=UTF-8
 encoding//grails-app/i18n/messages_th.properties=UTF-8
 encoding//grails-app/i18n/messages_zh_CN.properties=UTF-8
+encoding//grails-app/i18n/shiro.properties=UTF-8
