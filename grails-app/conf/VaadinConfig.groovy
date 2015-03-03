@@ -32,7 +32,7 @@ vaadin {
     // asyncSupported = true
 
     // Uncomment and provide name of the theme (a directory name in web-app/VAADIN/themes folder)
-     themes = ['Reindeer']
+     themes = ['StockControl']
     // You can specify exact version of Vaadin for SASS compilation
     // sassCompile = '7.1.9'
 

@@ -40,7 +40,7 @@ import com.vaadin.ui.MenuBar.MenuItem
 
 import com.vaadin.annotations.Theme;
 
-//@Theme("StockControl")
+@Theme("StockControl")
 public class MyUI extends UI{
 	Navigator navigator
 	
@@ -137,11 +137,11 @@ public class MyUI extends UI{
 			// Get the user name from the session
 			UserName = String.valueOf(getSession().getAttribute("user"));
 			Subject currentUser = SecurityUtils.getSubject();
-			print UserName + "/" + currentUser.getPrincipal()
+			//print UserName + "/" + currentUser.getPrincipal()
 			userMenu.setText(UserName)
 			userMenu.setDescription("UserName")
 			
-			print event.getParameters()
+			//print event.getParameters()
 			VerticalLayout panelContent = new VerticalLayout();
 			panelContent.setSizeFull();
 //			panelContent.setMargin(true);

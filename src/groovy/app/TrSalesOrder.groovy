@@ -66,7 +66,6 @@ import com.vaadin.grails.Grails
 class TrSalesOrder extends VerticalLayout{
 	def selectedRow
 	def itemlist
-	static final Constant constant = new Constant()
 	GeneralFunction generalFunction = new GeneralFunction()
 	private MenuBar menuBar
 	private MenuBar menuBarDetail
@@ -89,8 +88,8 @@ class TrSalesOrder extends VerticalLayout{
 	private Action actionDelete = new Action("Delete");
 	private int code = 1;
 	private static final int MAX_PAGE_LENGTH = 15;
-	String Title = constant.MenuGroup.Transaction + ":" +
-						constant.MenuName.SalesOrder + ":";
+	String Title = Constant.MenuGroup.Transaction + ":" +
+						Constant.MenuName.SalesOrder + ":";
 	Subject currentUser;
 	 
 	public TrSalesOrder() {
@@ -283,7 +282,7 @@ class TrSalesOrder extends VerticalLayout{
 	
 	//@RequiresPermissions("Transaction:SalesOrder:Confirm")
 	private void windowConfirm(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Confirm)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Confirm)) {
 			ConfirmDialog.show(this.getUI(), caption + " ID:" + tableContainer.getItem(table.getValue()).getItemProperty("id") + " ? ",
 				new ConfirmDialog.Listener() {
 				public void onClose(ConfirmDialog dialog) {
@@ -313,7 +312,7 @@ class TrSalesOrder extends VerticalLayout{
 	
 	//@RequiresPermissions("Transaction:SalesOrder:Unconfirm")
 	private void windowUnconfirm(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Unconfirm)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Unconfirm)) {
 			ConfirmDialog.show(this.getUI(), caption + " ID:" + tableContainer.getItem(table.getValue()).getItemProperty("id") + " ? ",
 				new ConfirmDialog.Listener() {
 				public void onClose(ConfirmDialog dialog) {
@@ -343,7 +342,7 @@ class TrSalesOrder extends VerticalLayout{
 	
 	//@RequiresPermissions("Transaction:SalesOrder:Delete")
 	private void windowDelete(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Delete)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Delete)) {
 			ConfirmDialog.show(this.getUI(), caption + " ID:" + tableContainer.getItem(table.getValue()).getItemProperty("id") + " ? ",
 			new ConfirmDialog.Listener() {
 				public void onClose(ConfirmDialog dialog) {
@@ -365,7 +364,7 @@ class TrSalesOrder extends VerticalLayout{
 	
 	//@RequiresPermissions("Transaction:SalesOrder:Edit")
 	private void windowDeleteDetail(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Edit)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Edit)) {
 			ConfirmDialog.show(this.getUI(), caption + " ID:" + tableDetailContainer.getItem(tableDetail.getValue()).getItemProperty("id") + " ? ",
 				new ConfirmDialog.Listener() {
 				public void onClose(ConfirmDialog dialog) {
@@ -394,7 +393,7 @@ class TrSalesOrder extends VerticalLayout{
 	
 	//@RequiresPermissions("Transaction:SalesOrder:Edit")
 	private void windowEdit(def item,String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Edit)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Edit)) {
 			window = new Window(caption);
 			window.setModal(true);
 			layout = new FormLayout();
@@ -451,7 +450,7 @@ class TrSalesOrder extends VerticalLayout{
 	
 	//@RequiresPermissions("Transaction:SalesOrder:Add")
 	private void windowAdd(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Add)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Add)) {
 			window = new Window(caption)
 			window.setModal(true)
 			def layout3 = new FormLayout()
@@ -485,7 +484,7 @@ class TrSalesOrder extends VerticalLayout{
 	
 	//@RequiresPermissions("Transaction:SalesOrder:Edit")
 	private void windowAddDetail(item,String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Edit)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Edit)) {
 			window = new Window(caption)
 			window.setModal(true)
 			def layout3 = new FormLayout()
@@ -526,7 +525,7 @@ class TrSalesOrder extends VerticalLayout{
 	
 	//@RequiresPermissions("Transaction:SalesOrder:Edit")
 	private void windowEditDetail(item,itemDetail,String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Edit)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Edit)) {
 			window = new Window(caption)
 			window.setModal(true)
 			def layout3 = new FormLayout()

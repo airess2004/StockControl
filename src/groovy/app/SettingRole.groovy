@@ -2,9 +2,6 @@ package app
 
 import java.awt.event.ItemEvent;
 
-
-
-
 import org.apache.shiro.subject.Subject;
 import org.vaadin.dialogs.ConfirmDialog
 
@@ -56,7 +53,6 @@ import com.vaadin.grails.Grails
 class SettingRole extends VerticalLayout{
 	def selectedRow
 	def itemlist
-	static final Constant constant = new Constant()
 	GeneralFunction generalFunction = new GeneralFunction()
 	private MenuBar menuBar
 	private Window window
@@ -69,8 +65,8 @@ class SettingRole extends VerticalLayout{
 	private Action actionDelete = new Action("Delete");
 	private int code = 1;
 	private static final int MAX_PAGE_LENGTH = 15;
-	String Title = constant.MenuGroup.Setting + ":" + 
-						constant.MenuName.Role + ":";
+	String Title = Constant.MenuGroup.Setting + ":" + 
+						Constant.MenuName.Role + ":";
 	Subject currentUser;
 	
 	public SettingRole() {
@@ -173,7 +169,7 @@ class SettingRole extends VerticalLayout{
 	
 	//@RequiresPermissions("Setting:Role:Delete")
 	private void windowDelete(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Delete)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Delete)) {
 			ConfirmDialog.show(this.getUI(), caption + " ID:" + tableContainer.getItem(table.getValue()).getItemProperty("id") + " ? ",
 			new ConfirmDialog.Listener() {
 				public void onClose(ConfirmDialog dialog) {
@@ -195,7 +191,7 @@ class SettingRole extends VerticalLayout{
 	
 	//@RequiresPermissions("Setting:Role:Edit")
 	private void windowEdit(def item,String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Edit)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Edit)) {
 			window = new Window(caption);
 			window.setModal(true);
 			layout = new FormLayout();
@@ -222,7 +218,7 @@ class SettingRole extends VerticalLayout{
 	
 	//@RequiresPermissions("Setting:Role:Add")
 	private void windowAdd(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Add)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Add)) {
 			window = new Window(caption);
 			window.setModal(true);
 			layout = new FormLayout();

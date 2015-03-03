@@ -5,7 +5,7 @@ import stockcontrol.ItemValidationService
 
 @Transactional
 class RoleService {
-	RoleValidator roleValidator
+	RoleValidatorService roleValidatorService = new RoleValidatorService()
 	
     def serviceMethod() {
 
@@ -21,7 +21,7 @@ class RoleService {
 	
 	def createObject(object){
 			object.isDeleted = false
-			object = roleValidator.createObjectValidation(object as ShiroRole)
+			object = roleValidatorService.createObjectValidation(object as ShiroRole)
 			if (object.errors.getErrorCount() == 0)
 			{
 			object.save()
@@ -34,7 +34,7 @@ class RoleService {
 		def valObject = ShiroRole.read(object.id)
 //		valObject.id = object.id
 		valObject.name = object.name
-		valObject = roleValidator.updateObjectValidation(valObject)
+		valObject = roleValidatorService.updateObjectValidation(valObject)
 		if (valObject.errors.getErrorCount() == 0)
 		{
 //			def newObject2 = Item.get(object.id)

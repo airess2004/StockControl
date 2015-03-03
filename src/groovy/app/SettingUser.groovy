@@ -48,7 +48,6 @@ import com.vaadin.grails.Grails
 class SettingUser extends VerticalLayout{
 	def selectedRow
 	def itemlist
-	Constant constant = new Constant()
 	def generalFunction = new GeneralFunction()
 	private MenuBar menuBar
 	private Window window
@@ -66,8 +65,8 @@ class SettingUser extends VerticalLayout{
 	Subject currentUser;
 	
 	public SettingUser() {
-		String Title = constant.MenuGroup.Setting + ":" +
-				constant.MenuName.User + ":";
+		String Title = Constant.MenuGroup.Setting + ":" +
+				Constant.MenuName.User + ":";
 		currentUser = SecurityUtils.getSubject();
 		
 		initTable();
@@ -172,7 +171,7 @@ class SettingUser extends VerticalLayout{
 	
 	//@RequiresPermissions("Setting:User:Delete")
 	private void windowDelete(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Delete)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Delete)) {
 			ConfirmDialog.show(this.getUI(), caption + " ID:" + tableContainer.getItem(table.getValue()).getItemProperty("id") + " ? ",
 			new ConfirmDialog.Listener() {
 				public void onClose(ConfirmDialog dialog) {
@@ -194,7 +193,7 @@ class SettingUser extends VerticalLayout{
 	
 	//@RequiresPermissions("Setting:User:Edit")
 	private void windowEdit(def item,String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Edit)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Edit)) {
 			window = new Window(caption);
 			window.setModal(true);
 			layout = new FormLayout();
@@ -228,7 +227,7 @@ class SettingUser extends VerticalLayout{
 	
 	//@RequiresPermissions("Setting:User:Add")
 	private void windowAdd(String caption) {
-		if (currentUser.isPermitted(Title + constant.AccessType.Add)) {
+		if (currentUser.isPermitted(Title + Constant.AccessType.Add)) {
 			window = new Window(caption);
 			window.setModal(true);
 			layout = new FormLayout() //FormLayout();
