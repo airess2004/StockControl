@@ -1,6 +1,9 @@
+import org.apache.shiro.crypto.hash.Sha256Hash
 import stockcontrol.Contact
 import stockcontrol.Item
 import stockcontrol.ItemService
+import stockcontrol.ShiroRole
+import stockcontrol.ShiroUser
 
 class BootStrap {
 	def itemService
@@ -41,7 +44,35 @@ class BootStrap {
 		newContact2.address = "Jln. Alamat 765"
 		newContact2.save()
 		
+		// Spring Security
+		//def adminRole = new Authority(authority: 'ROLE_ADMIN').save(flush: true)
+		//def userRole = new Authority(authority: 'ROLE_USER').save(flush: true)
+		//def testUser = new Person(username: 'me', enabled: true, password: 'password') testUser.save(flush: true)
+		//UserRole.create testUser, adminRole, true
+		//assert User.count() == 1
+		//assert Role.count() == 2
+		//assert UserRole.count() == 1
 		
+		//Shiro
+		def adminRole = ShiroRole.findByNameAndIsDeleted("Administrator",false)
+		if(adminRole==null){
+			adminRole = new ShiroRole(name: "Administrator")
+			adminRole.addToPermissions("*:*")
+			//adminRole.addToPermissions("admin")
+			adminRole.save(flush:true, failOnError:true)
+		}
+		if (ShiroUser.findAllByUsernameAndIsDeleted("ADMIN",false).isEmpty()) {
+			def user = new ShiroUser(username: "ADMIN", passwordHash: new Sha256Hash("sysadmin").toHex())
+			user.addToRoles(adminRole)
+			//		user.addToPermissions("*:*")
+			//		user.addToPermissions("admin")
+			user.save(flush:true, failOnError:true)
+		}
+		if (ShiroUser.findAllByUsernameAndIsDeleted("GUEST",false).isEmpty()) {
+			def user = new ShiroUser(username: "GUEST", passwordHash: new Sha256Hash("guest").toHex())
+			//user.addToPermissions("Master:Item:Add")
+			user.save(flush:true, failOnError:true)
+		}
     }
 	
     def destroy = {
