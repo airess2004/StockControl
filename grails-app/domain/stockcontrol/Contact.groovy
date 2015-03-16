@@ -10,5 +10,7 @@ class Contact {
 	
 	
     static constraints = {
+		phoneBook (nullable : true)
+		address (nullable : true)
     }
 }

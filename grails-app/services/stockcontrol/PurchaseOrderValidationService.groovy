@@ -119,6 +119,8 @@ class PurchaseOrderValidationService {
 	def softDeleteObjectValidation(def object){
 		object = hasDeleted(object)
 		if (object.errors.hasErrors()) return object
+		object = hasConfirmed(object)
+		if (object.errors.hasErrors()) return object
 		return object
 	}
 	
