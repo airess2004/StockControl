@@ -20,14 +20,16 @@ class ItemService {
 	}
 	
 	def createObject(object){
+		
 			object.isDeleted = false
 			object.pendingDelivery = 0
 			object.pendingReceival = 0
 			object.quantity = 0
-			object = itemValidationService.createObjectValidation(object as Item)
+		
+			object = itemValidationService.createObjectValidation(object as Object)
 			if (object.errors.getErrorCount() == 0)
 			{
-			object.save()
+			object = object.save()
 			} 
 		return object
 	}

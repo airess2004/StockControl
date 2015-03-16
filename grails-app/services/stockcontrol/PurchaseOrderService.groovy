@@ -32,7 +32,6 @@ class PurchaseOrderService {
 			object.isConfirmed = false
 			object.isDeleted = false
 			object = purchaseOrderValidationService.createObjectValidation(object as PurchaseOrder)
-			print object.errors.getErrorCount()
 			if (object.errors.getErrorCount() == 0)
 			{
 			object.save()

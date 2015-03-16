@@ -36,11 +36,29 @@ class PurchaseOrderDetailValidationService {
 		return object
 	}
 	
+	def purchaseOrderNotNull(def object)
+	{
+		if (object.purchaseOrder == null)
+		{
+			object.errors.rejectValue('purchaseOrder','null','PurchaseOrder tidak boleh kosong')
+		}
+		return object
+	}
+	
 	def itemNotNull(def object){
 		
 			if (object.item == null)
 			{
 				object.errors.rejectValue('item','null','Item tidak boleh kosong')
+			}
+			return object
+		}
+	
+	def quantityIsZero(def object){
+		
+			if (object.quantity <= 0)
+			{
+				object.errors.rejectValue('quantity','null','Quantity harus lebih besar dari nol')
 			}
 			return object
 		}
@@ -68,6 +86,8 @@ class PurchaseOrderDetailValidationService {
 		}
 	
 	def createObjectValidation(def object){
+		object = purchaseOrderNotNull(object)
+		if (object.errors.hasErrors()) return object
 		object = hasConfirmed(object)
 		if (object.errors.hasErrors()) return object
 		object = codeNotNull(object)
@@ -77,10 +97,14 @@ class PurchaseOrderDetailValidationService {
 		object = itemNotNull(object)
 		if (object.errors.hasErrors()) return object
 		object = quantityNotNull(object)
+		if (object.errors.hasErrors()) return object
+		object = quantityIsZero(object)
 		return object
 	}
 	
 	def updateObjectValidation(def object){
+		object = purchaseOrderNotNull(object)
+		if (object.errors.hasErrors()) return object
 		object = hasConfirmed(object)
 		if (object.errors.hasErrors()) return object
 		object = codeNotNull(object)
@@ -90,6 +114,8 @@ class PurchaseOrderDetailValidationService {
 		object = itemNotNull(object)
 		if (object.errors.hasErrors()) return object
 		object = quantityNotNull(object)
+		if (object.errors.hasErrors()) return object
+		object = quantityIsZero(object)
 		return object
 	}
 	

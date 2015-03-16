@@ -9,5 +9,7 @@ class Contact {
 	Date lastUpdated // Predefined names by Grails will be filled automatically
 	
     static constraints = {
+		phoneBook (nullable : true)
+		address (nullable : true)
     }
 }

@@ -40,8 +40,6 @@ class ItemValidationService {
 	
 	def skuMustUnique(def object){
 			def uniq = Item.findBySkuAndIsDeleted(object.sku,false)
-			print uniq
-			print object
 			if (uniq != null)
 			{
 				if (uniq.id != object.id)
