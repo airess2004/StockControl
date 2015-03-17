@@ -39,7 +39,7 @@ class DeliveryOrderService {
 		def valObject = DeliveryOrder.read(object.id)
 		valObject.code = object.code
 		valObject.salesOrder = object.salesOrder
-		valObject.receivalDate = object.receivalDate
+		valObject.deliveryDate = object.deliveryDate
 		valObject = deliveryOrderValidationService.updateObjectValidation(valObject)
 		if (valObject.errors.getErrorCount() == 0)
 		{
@@ -76,6 +76,7 @@ class DeliveryOrderService {
 				item.quantity -= a.quantity
 				a.isConfirmed = true
 				a.confirmationDate = new Date()
+				a.salesOrderDetail.pendingDelivery -= a.quantity
 				StockMutation sm = new StockMutation()
 				sm.quantity = a.quantity
 				sm.itemCase = "ready"
@@ -107,6 +108,7 @@ class DeliveryOrderService {
 				item.quantity += a.quantity
 				a.isConfirmed = false
 				a.confirmationDate = null
+				a.salesOrderDetail.pendingDelivery += a.quantity
 				StockMutation sm = new StockMutation()
 				sm.quantity = a.quantity
 				sm.itemCase = "pending"

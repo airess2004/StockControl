@@ -6,7 +6,7 @@ import stockcontrol.ItemValidationService
 @Transactional
 class PurchaseReceivalService {
 	PurchaseReceivalValidationService purchaseReceivalValidationService
-	
+	StockMutationService stockMutationService
     def serviceMethod() {
 
     }
@@ -76,6 +76,7 @@ class PurchaseReceivalService {
 				item.quantity += a.quantity
 				a.isConfirmed = true
 				a.confirmationDate = new Date()
+				a.purchaseOrderDetail.pendingReceival -= a.quantity
 				StockMutation sm = new StockMutation()
 				sm.quantity = a.quantity
 				sm.itemCase = "ready"
@@ -86,7 +87,7 @@ class PurchaseReceivalService {
 				sm.sourceDocumentDetailType = a.id
 				sm.isDeleted = false
 				sm.item = item
-				sm.save()
+				stockMutationService.createObject(sm)
 			}
 			newObject.save()
 		}
@@ -107,6 +108,7 @@ class PurchaseReceivalService {
 				item.quantity -= a.quantity
 				a.isConfirmed = false
 				a.confirmationDate = null
+				a.purchaseOrderDetail.pendingReceival += a.quantity
 				StockMutation sm = new StockMutation()
 				sm.quantity = a.quantity
 				sm.itemCase = "pending"
@@ -117,7 +119,7 @@ class PurchaseReceivalService {
 				sm.sourceDocumentDetailType = a.id
 				sm.isDeleted = false
 				sm.item = item
-				sm.save()
+				stockMutationService.createObject(sm)
 			}
 			newObject.save()
 		}

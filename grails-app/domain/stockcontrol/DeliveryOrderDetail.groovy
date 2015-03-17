@@ -16,7 +16,6 @@ class DeliveryOrderDetail {
 	DeliveryOrder	deliveryOrder
 	SalesOrderDetail	salesOrderDetail
 	
-	
     static constraints = {
 		confirmationDate (nullable : true)
     }

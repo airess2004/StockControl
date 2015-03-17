@@ -9,6 +9,7 @@ class PurchaseReceivalIntegrationSpec extends IntegrationSpec {
 	def contactService
 	def itemService
 	def purchaseOrderService
+	def purchaseOrderDetailService
 	
     def setup() {
     }
@@ -215,151 +216,222 @@ class PurchaseReceivalIntegrationSpec extends IntegrationSpec {
 	}
 	//-----------------------------END DELETE
 	
-//	//-----------------------------CONFIRM
-//	void "test confirm PurchaseReceival"() {
-//		setup: 'setting new Contact'
-//		def contact = new Contact()
-//		contact.name = "contactName";
-//		contact.phoneBook = "88723";
-//		contact.address = "Jln. Kopi";
-//		contact = contactService.createObject(contact)
-//		
-//		and: 'setting new PurchaseOrder'
-//		def purchaseOrder = new PurchaseOrder()
-//		purchaseOrder.code = "code1"
-//		purchaseOrder.contact = contact
-//		purchaseOrder.purchaseDate = new Date(2015, 3, 16)
-//		purchaseOrder = purchaseOrderService.createObject(purchaseOrder)
-//		
-//		and: 'setting new PurchaseReceival'
-//		def purchaseReceival = new PurchaseReceival()
-//		purchaseReceival.code = "code1"
-//		purchaseReceival.purchaseOrder = purchaseOrder
-//		purchaseReceival.receivalDate = new Date(2015, 3, 16)
-//		purchaseReceival = purchaseReceivalService.createObject(purchaseReceival)
-//		
-//		and : 'setting new PurchaseReceivalDetail'
-//		def purchaseReceivalDetail = new PurchaseReceivalDetail()
-//		purchaseReceivalDetail.purchaseReceival = purchaseReceival
-//		purchaseReceivalDetail.code = "coded1"
-//		purchaseReceivalDetail.purchaseOrderDetail = purchaseOrderDetail
-//		purchaseReceivalDetail.quantity = 1
-//		purchaseReceivalDetail = purchaseReceivalDetailService.createObject(purchaseReceivalDetail)
-//		purchaseReceival.addToPurchaseReceivalDetails(purchaseReceivalDetail)
-//		
-//		when: 'confirm is called'
-//		purchaseReceival = purchaseReceivalService.confirmObject(purchaseReceival)
-//				
-//		then: 'check has error'
-//		purchaseReceival.hasErrors() == false
-//		purchaseReceival.isConfirmed == true
-//		println  "Confirm success"
-//	}
+	//-----------------------------CONFIRM
+	void "test confirm PurchaseReceival"() {
+		setup: 'setting new Contact'
+		def contact = new Contact()
+		contact.name = "contactName";
+		contact.phoneBook = "88723";
+		contact.address = "Jln. Kopi";
+		contact = contactService.createObject(contact)
+		
+		and: 'setting new Item'
+		def item = new Item()
+		item.sku = "newsku"
+		item.description = "ItemName"
+		item = itemService.createObject(item)
+		
+		and: 'setting new PurchaseOrder'
+		def purchaseOrder = new PurchaseOrder()
+		purchaseOrder.code = "code1"
+		purchaseOrder.contact = contact
+		purchaseOrder.purchaseDate = new Date(2015, 3, 16)
+		purchaseOrder = purchaseOrderService.createObject(purchaseOrder)
+		
+		and : 'setting new PurchaseOrderDetail'
+		def purchaseOrderDetail = new PurchaseOrderDetail()
+		purchaseOrderDetail.purchaseOrder = purchaseOrder
+		purchaseOrderDetail.code = "coded1"
+		purchaseOrderDetail.item = item
+		purchaseOrderDetail.quantity = 2
+		purchaseOrderDetail = purchaseOrderDetailService.createObject(purchaseOrderDetail)
+		purchaseOrder.addToPurchaseOrderDetails(purchaseOrderDetail)
+		
+		and : 'confirm PurchaseOrder'
+		purchaseOrder = purchaseOrderService.confirmObject(purchaseOrder)
+		 
+		and: 'setting new PurchaseReceival'
+		PurchaseReceival purchaseReceival = new PurchaseReceival()
+		purchaseReceival.code = "code1"
+		purchaseReceival.purchaseOrder = purchaseOrder
+		purchaseReceival.receivalDate = new Date(2015, 3, 16)
+		purchaseReceival = purchaseReceivalService.createObject(purchaseReceival)
+		
+		and : 'setting new PurchaseReceivalDetail'
+		def purchaseReceivalDetail = new PurchaseReceivalDetail()
+		purchaseReceivalDetail.purchaseReceival = purchaseReceival
+		purchaseReceivalDetail.code = "coded1"
+		purchaseReceivalDetail.purchaseOrderDetail = purchaseOrderDetail
+		purchaseReceivalDetail.quantity = 1
+		purchaseReceivalDetail = purchaseReceivalDetailService.createObject(purchaseReceivalDetail)
+		purchaseReceival.addToPurchaseReceivalDetails(purchaseReceivalDetail)
+		
+		when: 'confirm is called'
+		purchaseReceival = purchaseReceivalService.confirmObject(purchaseReceival)
+				
+		then: 'check has error'
+		purchaseReceival.hasErrors() == false
+		purchaseReceival.isConfirmed == true
+		purchaseReceival.purchaseReceivalDetails.findAll{ it.isConfirmed == false && it.isDeleted == false }.size() == 0
+		PurchaseOrderDetail.findById(purchaseOrderDetail.id).pendingReceival == 1
+		Item.findById(item.id).pendingReceival == 1
+		Item.findById(item.id).quantity == 1
+		StockMutation.findBySourceDocumentIdAndSourceDocumentDetailId(purchaseReceival.id,purchaseReceivalDetail.id).quantity == 1
+		println  "Confirm success"
+	}
+	
+	void "test confirm validation PurchaseReceival must has PurchaseReceivalDetails"() {
+		setup : 'setting new Contact'
+		def contact = new Contact()
+		contact.name = "contactName"
+		contact.phoneBook = "88723"
+		contact.address = "Jln. Kopi"
+		contact = contactService.createObject(contact)
+		
+		and: 'setting new PurchaseOrder'
+		def purchaseOrder = new PurchaseOrder()
+		purchaseOrder.code = "code1"
+		purchaseOrder.contact = contact
+		purchaseOrder.purchaseDate = new Date(2015, 3, 16)
+		purchaseOrder = purchaseOrderService.createObject(purchaseOrder)
+		
+		and: 'setting new PurchaseReceival'
+		def purchaseReceival = new PurchaseReceival()
+		purchaseReceival.code = "code1"
+		purchaseReceival.purchaseOrder = purchaseOrder
+		purchaseReceival.receivalDate = new Date(2015, 3, 16)
+		purchaseReceival = purchaseReceivalService.createObject(purchaseReceival)
+		
+		when: 'confirm is called'
+		purchaseReceival = purchaseReceivalService.confirmObject(purchaseReceival)
+				
+		then: 'check has error'
+		purchaseReceival.hasErrors() == true
+		println  "Validation success with error message : " + purchaseReceival.errors.getGlobalError().defaultMessage
+	}
+	
+	//-----------------------------END CONFIRM
 //	
-//	void "test confirm validation PurchaseReceival must has PurchaseReceivalDetails"() {
-//		setup : 'setting new Contact'
-//		def contact = new Contact()
-//		contact.name = "contactName"
-//		contact.phoneBook = "88723"
-//		contact.address = "Jln. Kopi"
-//		contact = contactService.createObject(contact)
-//		
-//		and: 'setting new Purchase Order'
-//		def purchaseReceival = new PurchaseReceival()
-//		purchaseReceival.code = "code1"
-//		purchaseReceival.contact = contact
-//		purchaseReceival.purchaseDate = new Date(2015, 3, 16)
-//		purchaseReceival = purchaseReceivalService.createObject(purchaseReceival)
-//		
-//		when: 'delete is called'
-//		purchaseReceival = purchaseReceivalService.confirmObject(purchaseReceival)
-//				
-//		then: 'check has error'
-//		purchaseReceival.hasErrors() == true
-//		println  "Validation success with error message : " + purchaseReceival.errors.getGlobalError().defaultMessage
-//	}
-//	
-//	//-----------------------------END CONFIRM
-//	
-//	//-----------------------------UNCONFIRM
-//	void "test unconfirm PurchaseReceival"() {
-//		setup : 'setting new Contact'
-//		def contact = new Contact()
-//		contact.name = "contactName"
-//		contact.phoneBook = "88723"
-//		contact.address = "Jln. Kopi"
-//		contact = contactService.createObject(contact)
-//		
-//		and: 'setting new Item'
-//		def item = new Item()
-//		item.sku = "newsku"
-//		item.description = "ItemName"
-//		item = itemService.createObject(item)
-//		
-//		and: 'setting new Purchase Order'
-//		def purchaseReceival = new PurchaseReceival()
-//		purchaseReceival.code = "code1"
-//		purchaseReceival.contact = contact
-//		purchaseReceival.purchaseDate = new Date(2015, 3, 16)
-//		purchaseReceival = purchaseReceivalService.createObject(purchaseReceival)
-//		
-//		and : 'setting new PurchaseReceivalDetail'
-//		def purchaseReceivalDetail = new PurchaseReceivalDetail()
-//		purchaseReceivalDetail.purchaseReceival = purchaseReceival
-//		purchaseReceivalDetail.code = "coded1"
-//		purchaseReceivalDetail.item = item
-//		purchaseReceivalDetail.quantity = 1
-//		purchaseReceivalDetail = purchaseReceivalDetailService.createObject(purchaseReceivalDetail)
-//		purchaseReceival.addToPurchaseReceivalDetails(purchaseReceivalDetail)
-//		
-//		when: 'confirm is called'
-//		purchaseReceival = purchaseReceivalService.confirmObject(purchaseReceival)
-//		purchaseReceival = purchaseReceivalService.unconfirmObject(purchaseReceival)
-//				
-//		then: 'check has error'
-//		purchaseReceival.hasErrors() == false
-//		purchaseReceival.isConfirmed == false
-//		purchaseReceival.confirmationDate == null
-//		println  "Confirm success"
-//	}
-//	
-//	void "test unconfirm validation PurchaseReceival isConfirmed must true"() {
-//		setup : 'setting new Contact'
-//		def contact = new Contact()
-//		contact.name = "contactName"
-//		contact.phoneBook = "88723"
-//		contact.address = "Jln. Kopi"
-//		contact = contactService.createObject(contact)
-//		
-//		and: 'setting new Item'
-//		def item = new Item()
-//		item.sku = "newsku"
-//		item.description = "ItemName"
-//		item = itemService.createObject(item)
-//		
-//		
-//		and: 'setting new Purchase Order'
-//		def purchaseReceival = new PurchaseReceival()
-//		purchaseReceival.code = "code1"
-//		purchaseReceival.contact = contact
-//		purchaseReceival.purchaseDate = new Date(2015, 3, 16)
-//		purchaseReceival = purchaseReceivalService.createObject(purchaseReceival)
-//		
-//		and : 'setting new PurchaseReceivalDetail'
-//		def purchaseReceivalDetail = new PurchaseReceivalDetail()
-//		purchaseReceivalDetail.purchaseReceival = purchaseReceival
-//		purchaseReceivalDetail.code = "coded1"
-//		purchaseReceivalDetail.item = item
-//		purchaseReceivalDetail.quantity = 1
-//		purchaseReceivalDetail = purchaseReceivalDetailService.createObject(purchaseReceivalDetail)
-//		purchaseReceival.addToPurchaseReceivalDetails(purchaseReceivalDetail)
-//		
-//		when: 'unconfirm is called'
-//		purchaseReceival = purchaseReceivalService.unconfirmObject(purchaseReceival)
-//				
-//		then: 'check has error'
-//		purchaseReceival.hasErrors() == true
-//		println  "Validation success with error message : " + purchaseReceival.errors.getGlobalError().defaultMessage
-//	}
-//	//-----------------------------END UNCONFIRM
+	//-----------------------------UNCONFIRM
+	void "test unconfirm PurchaseReceival"() {
+		setup: 'setting new Contact'
+		def contact = new Contact()
+		contact.name = "contactName";
+		contact.phoneBook = "88723";
+		contact.address = "Jln. Kopi";
+		contact = contactService.createObject(contact)
+		
+		and: 'setting new Item'
+		def item = new Item()
+		item.sku = "newsku"
+		item.description = "ItemName"
+		item = itemService.createObject(item)
+		
+		and: 'setting new PurchaseOrder'
+		def purchaseOrder = new PurchaseOrder()
+		purchaseOrder.code = "code1"
+		purchaseOrder.contact = contact
+		purchaseOrder.purchaseDate = new Date(2015, 3, 16)
+		purchaseOrder = purchaseOrderService.createObject(purchaseOrder)
+		
+		and : 'setting new PurchaseOrderDetail'
+		def purchaseOrderDetail = new PurchaseOrderDetail()
+		purchaseOrderDetail.purchaseOrder = purchaseOrder
+		purchaseOrderDetail.code = "coded1"
+		purchaseOrderDetail.item = item
+		purchaseOrderDetail.quantity = 2
+		purchaseOrderDetail = purchaseOrderDetailService.createObject(purchaseOrderDetail)
+		purchaseOrder.addToPurchaseOrderDetails(purchaseOrderDetail)
+		
+		and : 'confirm PurchaseOrder'
+		purchaseOrder = purchaseOrderService.confirmObject(purchaseOrder)
+		 
+		and: 'setting new PurchaseReceival'
+		PurchaseReceival purchaseReceival = new PurchaseReceival()
+		purchaseReceival.code = "code1"
+		purchaseReceival.purchaseOrder = purchaseOrder
+		purchaseReceival.receivalDate = new Date(2015, 3, 16)
+		purchaseReceival = purchaseReceivalService.createObject(purchaseReceival)
+		
+		and : 'setting new PurchaseReceivalDetail'
+		def purchaseReceivalDetail = new PurchaseReceivalDetail()
+		purchaseReceivalDetail.purchaseReceival = purchaseReceival
+		purchaseReceivalDetail.code = "coded1"
+		purchaseReceivalDetail.purchaseOrderDetail = purchaseOrderDetail
+		purchaseReceivalDetail.quantity = 1
+		purchaseReceivalDetail = purchaseReceivalDetailService.createObject(purchaseReceivalDetail)
+		purchaseReceival.addToPurchaseReceivalDetails(purchaseReceivalDetail)
+		
+		when: 'unconfirm is called'
+		purchaseReceival = purchaseReceivalService.confirmObject(purchaseReceival)
+		purchaseReceival = purchaseReceivalService.unconfirmObject(purchaseReceival)
+		
+		then: 'check has error'
+		purchaseReceival.hasErrors() == false
+		purchaseReceival.isConfirmed == false
+		purchaseReceival.purchaseReceivalDetails.findAll{ it.isConfirmed == true && it.isDeleted == false }.size() == 0
+		PurchaseOrderDetail.findById(purchaseOrderDetail.id).pendingReceival == 2
+		Item.findById(item.id).pendingReceival == 2
+		Item.findById(item.id).quantity == 0
+		StockMutation.findBySourceDocumentIdAndSourceDocumentDetailId(purchaseReceival.id,purchaseReceivalDetail.id).quantity == 1
+		println  "Unconfirm success"
+	}
+	
+	void "test unconfirm validation PurchaseReceival isConfirmed must true"() {
+		setup: 'setting new Contact'
+		def contact = new Contact()
+		contact.name = "contactName";
+		contact.phoneBook = "88723";
+		contact.address = "Jln. Kopi";
+		contact = contactService.createObject(contact)
+		
+		and: 'setting new Item'
+		def item = new Item()
+		item.sku = "newsku"
+		item.description = "ItemName"
+		item = itemService.createObject(item)
+		
+		and: 'setting new PurchaseOrder'
+		def purchaseOrder = new PurchaseOrder()
+		purchaseOrder.code = "code1"
+		purchaseOrder.contact = contact
+		purchaseOrder.purchaseDate = new Date(2015, 3, 16)
+		purchaseOrder = purchaseOrderService.createObject(purchaseOrder)
+		
+		and : 'setting new PurchaseOrderDetail'
+		def purchaseOrderDetail = new PurchaseOrderDetail()
+		purchaseOrderDetail.purchaseOrder = purchaseOrder
+		purchaseOrderDetail.code = "coded1"
+		purchaseOrderDetail.item = item
+		purchaseOrderDetail.quantity = 2
+		purchaseOrderDetail = purchaseOrderDetailService.createObject(purchaseOrderDetail)
+		purchaseOrder.addToPurchaseOrderDetails(purchaseOrderDetail)
+		
+		and : 'confirm PurchaseOrder'
+		purchaseOrder = purchaseOrderService.confirmObject(purchaseOrder)
+		 
+		and: 'setting new PurchaseReceival'
+		PurchaseReceival purchaseReceival = new PurchaseReceival()
+		purchaseReceival.code = "code1"
+		purchaseReceival.purchaseOrder = purchaseOrder
+		purchaseReceival.receivalDate = new Date(2015, 3, 16)
+		purchaseReceival = purchaseReceivalService.createObject(purchaseReceival)
+		
+		and : 'setting new PurchaseReceivalDetail'
+		def purchaseReceivalDetail = new PurchaseReceivalDetail()
+		purchaseReceivalDetail.purchaseReceival = purchaseReceival
+		purchaseReceivalDetail.code = "coded1"
+		purchaseReceivalDetail.purchaseOrderDetail = purchaseOrderDetail
+		purchaseReceivalDetail.quantity = 1
+		purchaseReceivalDetail = purchaseReceivalDetailService.createObject(purchaseReceivalDetail)
+		purchaseReceival.addToPurchaseReceivalDetails(purchaseReceivalDetail)
+		
+		when: 'unconfirm is called'
+		purchaseReceival = purchaseReceivalService.unconfirmObject(purchaseReceival)
+				
+		then: 'check has error'
+		purchaseReceival.hasErrors() == true
+		println  "Validation success with error message : " + purchaseReceival.errors.getGlobalError().defaultMessage
+	}
+	//-----------------------------END UNCONFIRM
 }

@@ -304,7 +304,7 @@ class PurchaseOrderDetailIntegrationSpec extends IntegrationSpec {
 	}
 	
 	//------------------------------------END UPDATE
-	
+	//-------------------------------------DELETE
 	void "test softdelete PurchaseOrder"() {
 		setup: 'setting new Contact'
 		def contact = new Contact()
@@ -342,4 +342,5 @@ class PurchaseOrderDetailIntegrationSpec extends IntegrationSpec {
 		purchaseOrderDetail.isDeleted == true
 		println  "Delete Success"
 	}
+	//----------------------------------------END DELETE
 }

@@ -36,6 +36,16 @@ class DeliveryOrderDetailValidationService {
 		return object
 	}
 	
+	def quantityIsZero(def object){
+		
+			if (object.quantity <= 0)
+			{
+				object.errors.rejectValue('quantity','null','Quantity harus lebih besar dari nol')
+			}
+			return object
+		}
+	
+	
 	def salesOrderDetailNotNull(def object){
 		
 			if (object.salesOrderDetail == null)
@@ -43,7 +53,7 @@ class DeliveryOrderDetailValidationService {
 				object.errors.rejectValue('salesOrderDetail','null','SalesOrderDetail tidak boleh kosong')
 			}
 			return object
-		}
+	}
 	
 	
 	def codeNotNull(def object){
@@ -77,6 +87,8 @@ class DeliveryOrderDetailValidationService {
 		object = salesOrderDetailNotNull(object)
 		if (object.errors.hasErrors()) return object
 		object = quantityNotNull(object)
+		if (object.errors.hasErrors()) return object
+		object = quantityIsZero(object)
 		return object
 	}
 	
@@ -90,6 +102,8 @@ class DeliveryOrderDetailValidationService {
 		object = salesOrderDetailNotNull(object)
 		if (object.errors.hasErrors()) return object
 		object = quantityNotNull(object)
+		if (object.errors.hasErrors()) return object
+		object = quantityIsZero(object)
 		return object
 	}
 	

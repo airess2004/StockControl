@@ -27,6 +27,15 @@ class PurchaseReceivalDetailValidationService {
 		return object
 	}
 	
+	def quantityIsZero(def object){
+		
+			if (object.quantity <= 0)
+			{
+				object.errors.rejectValue('quantity','null','Quantity harus lebih besar dari nol')
+			}
+			return object
+	}
+	
 	def quantityNotNull(def object)
 	{
 		if (object.quantity == null)
@@ -77,6 +86,8 @@ class PurchaseReceivalDetailValidationService {
 		object = purchaseOrderDetailNotNull(object)
 		if (object.errors.hasErrors()) return object
 		object = quantityNotNull(object)
+		if (object.errors.hasErrors()) return object
+		object = quantityIsZero(object)
 		return object
 	}
 	
@@ -90,6 +101,8 @@ class PurchaseReceivalDetailValidationService {
 		object = purchaseOrderDetailNotNull(object)
 		if (object.errors.hasErrors()) return object
 		object = quantityNotNull(object)
+		if (object.errors.hasErrors()) return object
+		object = quantityIsZero(object)
 		return object
 	}
 	

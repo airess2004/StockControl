@@ -48,7 +48,7 @@ class SalesOrderDetailService {
 		valObject.salesOrder = SalesOrder.get(object.salesOrderId)
 		valObject.code = object.code
 		valObject.item = object.item
-		valObject.quantity = 0
+		valObject.quantity = object.quantity
 		def newObject = salesOrderDetailValidationService.updateObjectValidation(valObject)
 		if (newObject.errors.getErrorCount() == 0)
 		{
