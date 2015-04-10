@@ -14,8 +14,10 @@ class ShiroDbRealm {
 
     def authenticate(authToken) {
         log.info "Attempting to authenticate ${authToken.username} in DB realm..."
+		
         def username = authToken.username
-
+		println  authToken
+		
         // Null username is invalid
         if (username == null) {
             throw new AccountException("Null usernames are not allowed by this realm.")

@@ -21,7 +21,7 @@ vaadin {
     // This is optional because the servlet is provided by default.
     // servletClass = "com.mycompany.MyGrailsAwareApplicationServlet"
 
-    productionMode = false
+    productionMode = true
 
     // Uncomment this to activate Open Session in View for Hibernate 3
     // openSessionInViewFilter = 'org.springframework.orm.hibernate3.support.OpenSessionInViewFilter'
@@ -32,7 +32,7 @@ vaadin {
     // asyncSupported = true
 
     // Uncomment and provide name of the theme (a directory name in web-app/VAADIN/themes folder)
-     themes = ['StockControl']
+//     themes = ['StockControl']
     // You can specify exact version of Vaadin for SASS compilation
     // sassCompile = '7.1.9'
 

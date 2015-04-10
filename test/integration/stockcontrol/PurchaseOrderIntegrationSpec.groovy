@@ -26,7 +26,8 @@ class PurchaseOrderIntegrationSpec extends IntegrationSpec {
 		def purchaseOrder = new PurchaseOrder()
 		purchaseOrder.code = "code1"
 		purchaseOrder.contact = contact
-		purchaseOrder.purchaseDate = new Date(2015, 3, 16)
+		purchaseOrder.purchaseDate = new Date(2014,3,16)
+		
 		
 		when: 'create is called'
 		purchaseOrder = purchaseOrderService.createObject(purchaseOrder)

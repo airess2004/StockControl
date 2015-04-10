@@ -40,7 +40,7 @@ import com.vaadin.ui.MenuBar.MenuItem
 
 import com.vaadin.annotations.Theme;
 
-@Theme("StockControl")
+//@Theme("StockControl")
 public class MyUI extends UI{
 	Navigator navigator
 	
@@ -123,8 +123,7 @@ public class MyUI extends UI{
 			hLayout.addComponent(panel);
 			hLayout.setExpandRatio(panel, 1.0f);
 			//hLayout.setWidth(null);
-			
-			addComponent(menuBar);
+			addComponent(menuBar)
 			setComponentAlignment(menuBar, Alignment.MIDDLE_RIGHT );
 			addComponent(hLayout);
 			setExpandRatio(hLayout, 1.0f);
@@ -175,6 +174,9 @@ public class MyUI extends UI{
 					break
 					case "Delivery Order":
 						panelContent.addComponent(new TrDeliveryOrder())
+					break
+					case "StockAdjusment":
+						panelContent.addComponent(new MasterCalendar())
 					break
 					case "User":
 						panelContent.addComponent(masterUser)

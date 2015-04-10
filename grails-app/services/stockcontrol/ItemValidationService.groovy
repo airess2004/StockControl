@@ -13,7 +13,7 @@ class ItemValidationService {
 		if (object.id == "" || object.id == null)
 		{
 			
-			object.errors.rejectValue('generic','null','Update Error')
+			object.errors.rejectValue('null','null','Update Error')
 		}
 		return object
 	}

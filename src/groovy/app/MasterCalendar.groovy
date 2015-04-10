@@ -4,12 +4,14 @@ import java.awt.event.ItemEvent;
 
 
 
+
+import org.apache.shiro.subject.Subject;
+
 import org.vaadin.dialogs.ConfirmDialog
 
-import app.widget.Constant;
+import app.widget.Constant as Constant
 import app.widget.GeneralFunction
-import stockcontrol.Contact
-import stockcontrol.ContactService
+import stockcontrol.ItemService
 
 import org.apache.shiro.subject.Subject
 import org.apache.shiro.SecurityUtils
@@ -31,6 +33,7 @@ import com.vaadin.event.MouseEvents.ClickListener
 import com.vaadin.server.DefaultErrorHandler
 import com.vaadin.server.UserError
 import com.vaadin.ui.Button
+import com.vaadin.ui.Calendar;
 import com.vaadin.ui.Component
 import com.vaadin.ui.Field
 import com.vaadin.ui.FormLayout
@@ -47,33 +50,35 @@ import com.vaadin.ui.MenuBar.MenuItem
 
 
 
+
+
 import stockcontrol.Item
 
 import com.vaadin.grails.Grails
 
-class MasterContact extends VerticalLayout{
+class MasterCalendar extends VerticalLayout{
 	def selectedRow
 	def itemlist
 	GeneralFunction generalFunction = new GeneralFunction()
 	private MenuBar menuBar
 	private Window window
 	private TextField textId
-	private TextField textName
-	private TextField textPhoneBook
-	private TextField textAddress
+	private TextField textSKU
+	private TextField textDescription
 	private Table table = new Table();
-	private BeanItemContainer<Contact> tableContainer;
+	private BeanItemContainer<Item> tableContainer;
 	private FieldGroup fieldGroup;
 	private FormLayout layout
 	private Action actionDelete = new Action("Delete");
 	private int code = 1;
 	private static final int MAX_PAGE_LENGTH = 15;
 	String Title = Constant.MenuGroup.Master + ":" + 
-						Constant.MenuName.Contact + ":";
+						Constant.MenuName.Item + ":";
 	Subject currentUser;
 	
-	public MasterContact() {
+	public MasterCalendar() {
 		currentUser = SecurityUtils.getSubject();
+		
 		initTable();
 		
 		HorizontalLayout menu = new HorizontalLayout()
@@ -90,7 +95,7 @@ class MasterContact extends VerticalLayout{
 				switch(selectedItem.getText())
 				{
 					case "Add":
-						def item = new BeanItem<Contact>(tableContainer)
+						def item = new BeanItem<Item>(tableContainer);
 						windowAdd("Add");
 					break
 					case "Edit":
@@ -111,9 +116,9 @@ class MasterContact extends VerticalLayout{
 		menu.addComponent(menuBar)
 		menuBar.setWidth("100%")	
 		
-		
-	
-		addComponent(table)
+		Calendar cal = new Calendar("My Calendar");
+//		addComponent(table)
+		addComponent(cal)
 //		table.setPageLength(table.size())
 	}
 	
@@ -121,8 +126,8 @@ class MasterContact extends VerticalLayout{
 	private Button createCancelButton() {
 		def saveButton = new Button("Cancel", new Button.ClickListener() {
 			void buttonClick(Button.ClickEvent event) {
-				window.setCaption(textName.getValue())
-				textName.discard()
+				window.setCaption(textSKU.getValue())
+				textSKU.discard()
 				window.close()
 			}
 		  })
@@ -134,26 +139,24 @@ class MasterContact extends VerticalLayout{
 			void buttonClick(Button.ClickEvent event) {
 				try{
 					def object = [id:textId.getValue(),
-								  name:textName.getValue(),
-								  phoneBook:textPhoneBook.getValue(),
-								  address:textAddress.getValue()]
+								  sku:textSKU.getValue().toString(),
+								  description:textDescription.getValue().toString()]
 					
 					if (object.id == "")
 					{
-						object =  Grails.get(ContactService).createObject(object)
+						object =  Grails.get(ItemService).createObject(object)
 					}
 					else
 					{
-						object =  Grails.get(ContactService).updateObject(object)
+						object =  Grails.get(ItemService).updateObject(object)
 					}
 					
 					
 					if (object.errors.hasErrors())
 					{
-						textName.setData("name")
-						textPhoneBook.setData("phoneBook")
-						textAddress.setData("address")
-						Object[] tv = [textName,textPhoneBook,textAddress]
+						textSKU.setData("sku")
+						textDescription.setData("description")
+						Object[] tv = [textSKU,textDescription]
 						generalFunction.setErrorUI(tv,object)
 					}
 					else
@@ -173,7 +176,7 @@ class MasterContact extends VerticalLayout{
 		  })
 	}
 	
-	//@RequiresPermissions("Master:Contact:Delete")
+	//@RequiresPermissions("Master:Item:Delete")
 	private void windowDelete(String caption) {
 		if (currentUser.isPermitted(Title + Constant.AccessType.Delete)) {
 			ConfirmDialog.show(this.getUI(), caption + " ID:" + tableContainer.getItem(table.getValue()).getItemProperty("id") + " ? ",
@@ -181,7 +184,7 @@ class MasterContact extends VerticalLayout{
 				public void onClose(ConfirmDialog dialog) {
 					if (dialog.isConfirmed()) {
 						def object = [id:tableContainer.getItem(table.getValue()).getItemProperty("id").toString()]
-						Grails.get(ContactService).softDeleteObject(object)
+						Grails.get(ItemService).softDeleteObject(object)
 						initTable()
 					} else {
 								
@@ -195,7 +198,7 @@ class MasterContact extends VerticalLayout{
 		}
 	}
 	
-	//@RequiresPermissions("Master:Contact:Edit")
+	//@RequiresPermissions("Master:Item:Edit")
 	private void windowEdit(def item,String caption) {
 		if (currentUser.isPermitted(Title + Constant.AccessType.Edit)) {
 			window = new Window(caption);
@@ -207,19 +210,16 @@ class MasterContact extends VerticalLayout{
 			textId.setPropertyDataSource(item.getItemProperty("id"))
 			textId.setReadOnly(true)
 			layout.addComponent(textId)
-			textName = new TextField("Name:");
-			textName.setPropertyDataSource(item.getItemProperty("name"))
-			textName.setBuffered(true)
-			textName.setImmediate(false)
-			layout.addComponent(textName)
-			textPhoneBook = new TextField("Phone:");
-			textPhoneBook.setBuffered(true)
-			textPhoneBook.setPropertyDataSource(item.getItemProperty("phoneBook"))
-			layout.addComponent(textPhoneBook)
-			textAddress = new TextField("Address:");
-			textAddress.setBuffered(true)
-			textAddress.setPropertyDataSource(item.getItemProperty("address"))
-			layout.addComponent(textAddress)
+			textSKU = new TextField("Code:");
+			textSKU.setPropertyDataSource(item.getItemProperty("sku"))
+			textSKU.setBuffered(true)
+			textSKU.setImmediate(false)
+			layout.addComponent(textSKU)
+			textDescription = new TextField("Description:");
+			textDescription.setPropertyDataSource(item.getItemProperty("description"))
+			textDescription.setBuffered(true)
+			textDescription.setImmediate(false)
+			layout.addComponent(textDescription)
 			layout.addComponent(createSaveButton())
 			layout.addComponent(createCancelButton())
 			getUI().addWindow(window);
@@ -230,9 +230,8 @@ class MasterContact extends VerticalLayout{
 		}
 	}
 	
-	//@RequiresPermissions("Master:Contact:Add")
+	//@RequiresPermissions("Master:Item:Add")
 	private void windowAdd(String caption) {
-		
 		if (currentUser.isPermitted(Title + Constant.AccessType.Add)) {
 			window = new Window(caption);
 			window.setModal(true);
@@ -243,12 +242,10 @@ class MasterContact extends VerticalLayout{
 			textId = new TextField("Product Id:");
 			textId.setReadOnly(true)
 			layout.addComponent(textId)
-			textName = new TextField("Name:");
-			layout.addComponent(textName)
-			textPhoneBook = new TextField("Phone:");
-			layout.addComponent(textPhoneBook)
-			textAddress = new TextField("Address:");
-			layout.addComponent(textAddress)
+			textSKU = new TextField("Code:");
+			layout.addComponent(textSKU)
+			textDescription = new TextField("Description:");
+			layout.addComponent(textDescription)
 			layout.addComponent(createSaveButton())
 			layout.addComponent(createCancelButton())
 			getUI().addWindow(window);
@@ -269,12 +266,12 @@ class MasterContact extends VerticalLayout{
 		}
 	 
 	 void initTable() {
-		tableContainer = new BeanItemContainer<Contact>(Contact.class);
+		tableContainer = new BeanItemContainer<Item>(Item.class);
 		//fillTableContainer(tableContainer);
-	    itemlist = Grails.get(ContactService).getList()
+	    itemlist = Grails.get(ItemService).getList()
 		tableContainer.addAll(itemlist)
 		table.setContainerDataSource(tableContainer);
-		table.visibleColumns = ["name", "phoneBook","address","isDeleted","dateCreated","lastUpdated"]
+		table.visibleColumns = ["sku", "description","quantity","pendingReceival","pendingDelivery","isDeleted","dateCreated","lastUpdated"]
 		table.setSelectable(true)
 		table.setImmediate(false)
 //		table.setPageLength(table.size())
